@@ -20,4 +20,4 @@
 
 echo ${SLURM_ARRAY_TASK_ID}
 
-singularity exec /n/app/singularity/containers/al323/tidy-4.0.4.sif bash -c "R -e '.libPaths(c(\"~/singularity_rlibs\", .libPaths())); cran_packages <- c(\"BiocManager\", \"numDeriv\", \"gridExtra\", \"impute\", \"rcellminerData\"); lapply(cran_packages, function(x) { if (!(x %in% .packages(TRUE))) install.packages(x) }); bioc_packages <- c(\"fgsea\", \"impute\"); lapply(bioc_packages, function(x) { if (!(x %in% .packages(TRUE))) BiocManager::install(x, ask=FALSE, update=FALSE) }); setwd(\"~/fgsea_model\"); source(\"model_modified.R\")'"
+singularity exec /n/app/singularity/containers/al323/tidy-4.0.4.sif bash -c "R -e '.libPaths(c(\"~/singularity_rlibs\", .libPaths())); cran_packages <- c(\"BiocManager\", \"numDeriv\", \"gridExtra\", \"impute\", \"rcellminerData\"); lapply(cran_packages, function(x) { if (!(x %in% .packages(TRUE))) install.packages(x) }); bioc_packages <- c(\"fgsea\", \"impute\"); lapply(bioc_packages, function(x) { if (!(x %in% .packages(TRUE))) BiocManager::install(x, ask=FALSE, update=FALSE) }); setwd(\"~/custom_regression_loss\"); source(\"model_modified.R\")'"
