@@ -1,1 +1,1 @@
-# custom_regression_loss
+https://alex.miller.im/posts/linear-model-custom-loss-function-regularization-python/

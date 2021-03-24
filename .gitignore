@@ -37,3 +37,10 @@ vignettes/*.pdf
 
 # R Environment Variables
 .Renviron
+run_6selected_700extra_1000noise_50samp_1e-2reltol_50kruns
+run_6selected_700extra_1000noise_50samp_1e-2reltol_50kruns_1-3
+run_6selected_700extra_700noise_50samp_1e-4reltol_70kruns
+run_o2
+run_o2_results.rds
+log_file.txt
+log_file_base.txt
