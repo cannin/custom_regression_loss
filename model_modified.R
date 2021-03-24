@@ -1,13 +1,21 @@
 library(numDeriv) 
 library(fgsea)
 library(magrittr)
+library(rcellminer)
+library(impute)
 
 source("tic_toc.R")
 
 # LOAD DATA ---- 
 ## fgsea examples
-data(examplePathways)
-data(exampleRanks)
+#data(examplePathways)
+#data(exampleRanks)
+
+## Load rcellminer data 
+nci60MolDat <- rcellminer::getAllFeatureData(rcellminerData::molData)
+nci60Exp <- nci60MolDat$exp
+
+# Load metadata
 load("tcga_pancan_pathway_genes.rda")
 hgnc <- read.table("hgnc_custom_20200106.txt", sep="\t", header=TRUE, comment.char="", quote="", stringsAsFactors=FALSE)
 
@@ -37,6 +45,8 @@ tcga_genes <- sort(unique(unlist(tcga_pancan_pathway_genes)))
 
 # OPTIMIZE GSEA ----
 loss_func_gsea <- function(beta_ranks, y_true, x, gsea_scale=1, log_file) {
+  #beta_ranks <- beta_init; y_true <- y_true; x <- x; gsea_scale <- 1; log_file <- "del.txt"
+  
   l1_scale <- 1e-1
   #gsea_scale <- 1 #1e2
   model_error_scale <- 1
@@ -110,10 +120,6 @@ set.seed(seed)
 n_responses <- 50
 n_extra_genes <- 700
 reltol <- 1e-2
-pathways <- tcga_pancan_pathway_genes
-#extra_genes <- c()
-extra_genes <- sample(hgnc$Approved.symbol, n_extra_genes)
-genes <- unique(c(tcga_genes, extra_genes))
 optim_control_params <- list(trace=1, maxit=1e4, reltol=reltol) # reltol=1e-8, 1e-2 faster
 #optim_control_params <- list(trace=1, maxit=100, abstol=1e-2) # reltol=1e-8, 1e-2 faster
 # 1e3 (default): From https://www.biostars.org/p/387492/ https://gsea-msigdb.github.io/gseapreranked-gpmodule/v6/index.html
@@ -121,38 +127,36 @@ nperm <- 1e4
 timestamp <- format(Sys.time(), "%Y%m%d_%H%M%S")
 
 # GENERATE DATA ----
-tmp_ranks <- rep(0, length(genes))
-names(tmp_ranks) <- genes
+## Get NCI60 data
+### Impute data or the y_true will end up with NAs and there this error: initial value in 'vmmin' is not finite
+nci60ExpImputed <- invisible(impute.knn(nci60Exp)$data)
+df <- t(nci60ExpImputed)
 
-## Random genes
-# vals <- runif(n_genes)
-# names(vals) <- sample(genes, n_genes)
-# tmp_ranks[names(vals)] <- vals
+## Set up gene lists 
+pathways <- tcga_pancan_pathway_genes
+genes_tcga <- sort(unique(unlist(tcga_pancan_pathway_genes)))
+genes_tcga_available <- intersect(colnames(df), genes_tcga)
+extra_genes <- sample(colnames(df), n_extra_genes)
+genes <- unique(c(genes_tcga_available, extra_genes))
 
-## Selected genes
-genes_selected <- c("CDKN2A", "CDKN2C", "CDKN1A", "RB1", "CCND3", "CCND1")
-tmp_ranks[genes_selected] <- 1*runif(length(genes_selected))
+# Make starting matrix
+x <- df[, genes] %>% as.matrix
 
-# Generate mock data
-#x <- round(runif(length(tmp_ranks)), 1)
-#y_true <- sum(x*tmp_ranks)
+## Make beta coefficient vectors
+tmp_beta0 <- rep(0, length(genes))
+names(tmp_beta0) <- genes
 
-t1 <- round(runif(n_responses*length(genes)), 2)
-x <- matrix(t1, nrow=n_responses, ncol=length(genes))
-colnames(x) <- names(tmp_ranks)
+## Selected features
+genes_selected_features <- c("CDKN2A", "CDKN2C", "CDKN1A", "RB1", "CCND3", "CCND1")
+tmp_beta0[genes_selected_features] <- 1*runif(length(genes_selected_features))
 
-y_true <- x %*% tmp_ranks %>% as.vector
-tmp_ranks[tmp_ranks > 0]
-beta_true <- tmp_ranks
+y_true <- x %*% tmp_beta0 %>% as.vector
+tmp_beta0[tmp_beta0 > 0]
+beta_true <- tmp_beta0
 
 ## Add noise 
-#noise_genes <- c("ALK", "ARAF") # From RTK RAS
-#noise_genes <- extra_genes # Everything but pathway genes 
-#noise_genes <- setdiff(genes, genes_selected) # Everything else
-#tmp_ranks[noise_genes] <- 1*runif(length(noise_genes))
-tmp_ranks <- 1*runif(length(tmp_ranks))
-names(tmp_ranks) <- names(beta_true)
-beta_init <- tmp_ranks
+beta_init <- 1*runif(length(tmp_beta0))
+names(beta_init) <- names(beta_true)
 
 # RUN ANALYSIS ---
 head(beta_init)
