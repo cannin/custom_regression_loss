@@ -1,7 +1,7 @@
 library(numDeriv) 
 library(fgsea)
 library(magrittr)
-library(rcellminer)
+#library(rcellminer)
 library(impute)
 
 source("tic_toc.R")
@@ -12,8 +12,10 @@ source("tic_toc.R")
 #data(exampleRanks)
 
 ## Load rcellminer data 
-nci60MolDat <- rcellminer::getAllFeatureData(rcellminerData::molData)
-nci60Exp <- nci60MolDat$exp
+#nci60MolDat <- rcellminer::getAllFeatureData(rcellminerData::molData)
+#nci60Exp <- nci60MolDat$exp
+#saveRDS(nci60Exp, "nci60Exp_bioc-2.12.0.rds")
+nci60Exp <- readRDS("nci60Exp_bioc-2.12.0.rds")
 
 # Load metadata
 load("tcga_pancan_pathway_genes.rda")
