@@ -3,6 +3,7 @@ library(fgsea)
 library(magrittr)
 #library(rcellminer)
 library(impute)
+library(digest)
 
 source("tic_toc.R")
 
@@ -119,8 +120,8 @@ set.seed(seed)
 
 # PARAMETERS ----
 #n_genes <- 20
-n_responses <- 50
-n_extra_genes <- 700
+#n_responses <- 50
+n_extra_genes <- floor(runif(1, 600, 800))
 reltol <- 1e-2
 max_iter <- 1e4
 optim_control_params <- list(trace=1, maxit=max_iter, reltol=reltol) # reltol=1e-8, 1e-2 faster
@@ -161,6 +162,10 @@ y_true <- x %*% tmp_beta0 %>% as.vector
 beta_init <- 1*runif(length(tmp_beta0))
 names(beta_init) <- names(beta_true)
 y_init <- x %*% beta_init %>% as.vector
+
+n_responses <- length(y_true)
+hash <- digest(x)
+cat("H: ", hash, "\n")
 
 ## Correlation true to init
 cor(y_true, y_init)
@@ -259,5 +264,6 @@ filename <- paste0("run_",
                    length(beta_true), "total_", 
                    n_responses, "samp_",
                    seed, "seed_",
+                   hash, "hash_",
                    timestamp, ".rda")
 save.image(filename)
