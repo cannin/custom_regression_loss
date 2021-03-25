@@ -112,7 +112,7 @@ loss_func_gsea <- function(beta_ranks, y_true, x, gsea_scale=1, log_file) {
   return(result_val)
 }
 
-seed <- floor(runif(1, 0, 10000))
+seed <- floor(runif(1, 0, 100000))
 seed
 #set.seed(234)
 set.seed(seed)
@@ -122,7 +122,8 @@ set.seed(seed)
 n_responses <- 50
 n_extra_genes <- 700
 reltol <- 1e-2
-optim_control_params <- list(trace=1, maxit=1e4, reltol=reltol) # reltol=1e-8, 1e-2 faster
+max_iter <- 1e4
+optim_control_params <- list(trace=1, maxit=max_iter, reltol=reltol) # reltol=1e-8, 1e-2 faster
 #optim_control_params <- list(trace=1, maxit=100, abstol=1e-2) # reltol=1e-8, 1e-2 faster
 # 1e3 (default): From https://www.biostars.org/p/387492/ https://gsea-msigdb.github.io/gseapreranked-gpmodule/v6/index.html
 nperm <- 1e4
@@ -152,21 +153,21 @@ names(tmp_beta0) <- genes
 genes_selected_features <- c("CDKN2A", "CDKN2C", "CDKN1A", "RB1", "CCND3", "CCND1")
 tmp_beta0[genes_selected_features] <- 1*runif(length(genes_selected_features))
 
-y_true <- x %*% tmp_beta0 %>% as.vector
 tmp_beta0[tmp_beta0 > 0]
 beta_true <- tmp_beta0
+y_true <- x %*% tmp_beta0 %>% as.vector
 
 ## Add noise 
 beta_init <- 1*runif(length(tmp_beta0))
 names(beta_init) <- names(beta_true)
+y_init <- x %*% beta_init %>% as.vector
+
+## Correlation true to init
+cor(y_true, y_init)
 
 # RUN ANALYSIS ---
 head(beta_init)
 tmp_df <- data.frame(gene=names(beta_init), beta_true=beta_true, beta_init=beta_init, stringsAsFactors=FALSE)
-
-# FIXME: DOES THIS WORK WITH GSEA VALUES?
-#results_grad <- numDeriv::grad(loss_func, tmp_ranks)
-#results_grad
 
 # RUN OPTIMIZATION ----
 method <- "BFGS" # "Nelder-Mead"
@@ -234,7 +235,6 @@ tmp_df$in_pathway[tmp_df$gene %in% unique(unlist(pathways))] <- TRUE
 #results_grad <- numDeriv::grad(loss_func, beta_ranks_final)
 
 # PRED VS TRUE CORRELATION ----
-y_init <- x %*% beta_init %>% as.vector
 y_pred <- x %*% beta_final %>% as.vector
 y_pred_base <- x %*% beta_final_base %>% as.vector
 plot(y_true, y_init)
