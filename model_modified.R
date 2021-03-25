@@ -254,7 +254,7 @@ sorted_tmp_df_pathway <- sorted_tmp_df[pathways[[pathway]], ]
 hist(sorted_tmp_df_pathway$diff_rank, breaks=nrow(tmp_df), main=pathway)
 
 filename <- paste0("run_", 
-                   length(genes_selected), "selected_", 
+                   length(genes), "selected_", 
                    n_extra_genes, "extra_", 
                    length(beta_true), "total_", 
                    n_responses, "samp_",
