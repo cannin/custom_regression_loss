@@ -8,7 +8,7 @@
 #SBATCH -e %j.err
 #SBATCH --ntasks=1
 #SBATCH --cpus-per-task=1
-#SBATCH --array=1-1000
+#SBATCH --array=1-100
 
 # srun --pty -p interactive -t 0-12:00 --mem 8192 /bin/bash 
 #
