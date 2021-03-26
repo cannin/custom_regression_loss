@@ -56,9 +56,15 @@ for(i in 1:length(files)) {
 saveRDS(results, "run_o2_results.rds")
 
 results <- readRDS("run_o2_results.rds")
+results <- unique(results[, -which(names(results) %in% c("seed"))])
 
-boxplot(results$cor_true_pred, at=1, xlim=c(0, 3), ylim=c(-0.5, 1.25))
-boxplot(results$cor_true_pred_base, at=2, add=TRUE)
+boxplot(results$cor_true_pred, results$cor_true_pred_base, xlim=c(0, 3), ylim=c(-0.1, 1.1))
+summary(results$cor_true_pred)
+summary(results$cor_true_pred_base)
 
+summary(results$pw_pval_final)
+summary(results$pw_pval_final_base)
 
+length(which(results$pw_min_final == "Cell Cycle"))
+length(which(results$pw_min_final_base == "Cell Cycle"))
 

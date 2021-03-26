@@ -121,7 +121,7 @@ set.seed(seed)
 # PARAMETERS ----
 #n_genes <- 20
 #n_responses <- 50
-n_extra_genes <- floor(runif(1, 600, 800))
+n_extra_genes <- floor(runif(1, 700, 1700))
 reltol <- 1e-2
 max_iter <- 1e4
 optim_control_params <- list(trace=1, maxit=max_iter, reltol=reltol) # reltol=1e-8, 1e-2 faster
@@ -181,7 +181,7 @@ log_headers <- "result_val|gsea_val|l1_val|model_error|sum_ypred|sum_ytrue|sum_b
 tic()
 gsea_scale <- 0
 verbose <- TRUE
-log_file <- paste0("log_file_base_", timestamp, "_", seed, "seed.txt")
+log_file <- paste0("log_file_base_", timestamp, "_", seed, "_seed_", hash, "_hash.txt")
 cat(log_headers, file=log_file, append=FALSE, sep = "\n")
 results_optim_base <- stats::optim(par=beta_init, fn=loss_func_gsea, gr=NULL, y_true, x, gsea_scale, log_file, method=method, control=optim_control_params)
 beta_final_base <- results_optim_base$par
@@ -190,7 +190,7 @@ toc()
 tic()
 gsea_scale <- 1
 verbose <- TRUE
-log_file <- paste0("log_file_", timestamp, "_", seed, "seed.txt")
+log_file <- paste0("log_file_", seed, "_seed_", hash, "_hash_", timestamp, ".txt")
 cat(log_headers, file=log_file, append=FALSE, sep = "\n")
 results_optim <- stats::optim(par=beta_init, fn=loss_func_gsea, gr=NULL, y_true, x, gsea_scale, log_file, method=method, control=optim_control_params)
 beta_final <- results_optim$par
@@ -259,11 +259,11 @@ sorted_tmp_df_pathway <- sorted_tmp_df[pathways[[pathway]], ]
 hist(sorted_tmp_df_pathway$diff_rank, breaks=nrow(tmp_df), main=pathway)
 
 filename <- paste0("run_", 
-                   length(genes), "selected_", 
-                   n_extra_genes, "extra_", 
-                   length(beta_true), "total_", 
-                   n_responses, "samp_",
-                   seed, "seed_",
-                   hash, "hash_",
+                   length(genes), "_selected_", 
+                   n_extra_genes, "_extra_", 
+                   length(beta_true), "_total_", 
+                   n_responses, "_samp_",
+                   seed, "_seed_",
+                   hash, "_hash_",
                    timestamp, ".rda")
 save.image(filename)
