@@ -181,7 +181,7 @@ log_headers <- "result_val|gsea_val|l1_val|model_error|sum_ypred|sum_ytrue|sum_b
 tic()
 gsea_scale <- 0
 verbose <- TRUE
-log_file <- paste0("log_file_base_", timestamp, "_", seed, "_seed_", hash, "_hash.txt")
+log_file <- paste0("log_file_base_", seed, "_seed_", hash, "_hash_", timestamp, ".txt")
 cat(log_headers, file=log_file, append=FALSE, sep = "\n")
 results_optim_base <- stats::optim(par=beta_init, fn=loss_func_gsea, gr=NULL, y_true, x, gsea_scale, log_file, method=method, control=optim_control_params)
 beta_final_base <- results_optim_base$par
