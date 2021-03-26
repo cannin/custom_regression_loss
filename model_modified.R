@@ -96,6 +96,9 @@ loss_func_gsea <- function(beta_ranks, y_true, x, gsea_scale=1, log_file) {
   sum_x <- sum(x)
   rank_val <- paste(beta_ranks[abs(beta_ranks) > 0], collapse=";")
   
+  r1 <- results_fgsea[order(-results_fgsea$ES),]
+  pathway_debug_str <- paste(r1$pathway, round(r1$ES, 2), collapse=";", sep=":")
+  
   out_str <- paste0(result_val, "|", 
                     gsea_val, "|", 
                     l1_val, "|", 
@@ -104,7 +107,8 @@ loss_func_gsea <- function(beta_ranks, y_true, x, gsea_scale=1, log_file) {
                     sum_ytrue, "|",
                     sum_beta, "|",
                     sum_x, "|", 
-                    es_pathway)
+                    es_pathway, "|",
+                    pathway_debug_str)
   
   if(!is.null(log_file)) {
     cat(out_str, file=log_file, append=TRUE, sep="\n")    
