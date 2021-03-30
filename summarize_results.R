@@ -55,10 +55,10 @@ for(i in 1:length(files)) {
     cor_true_pred=cor(y_true, y_pred),
     cor_true_pred_base=cor(y_true, y_pred_base),
     
-    cor_pw_true_init=cor(val_true, val_init),
-    cor_pw_true_pred=cor(val_true, val_final),
-    cor_pw_true_pred_base=cor(val_true, val_final_base),
-    cor_pw_is_final_better=ifelse(cor(val_true, val_final) > cor(val_true, val_final_base), TRUE, FALSE), 
+    cor_pw_true_init=cor(pw_val_true, pw_val_init),
+    cor_pw_true_pred=cor(pw_val_true, pw_val_final),
+    cor_pw_true_pred_base=cor(pw_val_true, pw_val_final_base),
+    cor_pw_is_final_better=ifelse(cor(pw_val_true, pw_val_final) > cor(pw_val_true, pw_val_final_base), TRUE, FALSE), 
     
     seed=seed,
     
